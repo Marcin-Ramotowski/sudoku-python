@@ -12,6 +12,7 @@ The game has the following functionalities:
 - At the start of the game, the player selects the difficulty level by clicking on the corresponding button. The player's choice is sent along with a Get request to the API from where a board of the selected difficulty level will be drawn.
 - Fields that are pre-filled at the start of the game are inactive, and the player cannot modify their values. These fields do not have a callback.
 - The user can have only one button with a number pressed at a time. If they press another button, the previously pressed one becomes inactive.
+- Notes mode - used to record potential values that could be placed in empty fields. To activate it, the user needs to press the 'N' button. Displayed numbers are presented in ascending order and can be both added to and removed from the pool.
 - Fields that the user has filled with a final value (not in notes mode) turn green.
 - After filling in all the fields, the user receives a notification about winning the game and can choose to play again or quit the game.
 

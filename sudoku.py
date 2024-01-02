@@ -1,6 +1,7 @@
+from api_talker import (get_sudoku_from_api, get_solution_from_api)
+import bisect
 import tkinter as tk
 from tkinter import messagebox, ttk
-from api_talker import (get_sudoku_from_api, get_solution_from_api)
 
 
 def start_game():
@@ -78,12 +79,16 @@ def create_sudoku_board(difficulty):
                                  command=lambda n=num: num_btn_callback(n)))
         num_btn[num - 1].place(x=x, y=y)
     
+    note_mode_btn = tk.Button(root, text="N", width=3, height=1, font=("Helvetica", 12, "bold"), bg="white",
+                              command=change_note_mode_state)
+    note_mode_btn.place(x=400, y=330)
+    
     positions = [(160, 30, 2, 273), (280, 30, 2, 273), (40, 120, 360, 2), (40, 210, 360, 2)]
     for position in positions:
         tk.Label(root, bg="black").place(x=position[0], y=position[1], width=position[2], height=position[3])
 
     handles = {'sudoku': sudoku, 'current_num': 0, 'moves': moves, 'sudoku_btn': sudoku_btn,
-               'num_btn': num_btn}
+               'num_btn': num_btn, 'note_mode_btn': note_mode_btn, 'note_mode': False}
     root.mainloop()
 
 
@@ -96,17 +101,22 @@ def check_number(sudoku, num, row, col):
 
 
 def sudoku_btn_callback(row, col):
+    button = handles['sudoku_btn'][row][col]
+    if hasattr(button, 'isFill'):
+        return
+
     current_num = handles['current_num']
     sudoku = handles['sudoku']
     moves = handles['moves']
-    prev_value = handles['sudoku_btn'][row][col]['text']
+    note_mode = handles['note_mode']
 
-    if check_number(sudoku, current_num, row, col):
+    if note_mode is True:
+        write_note(button, current_num)
+    elif check_number(sudoku, current_num, row, col):
         sudoku[row][col] = current_num
-        if not prev_value:
-            moves -= 1
-        handles['sudoku_btn'][row][col]['text'] = str(current_num)
-        handles['sudoku_btn'][row][col]['bg'] = 'lightgreen'
+        moves -= 1
+        button.config(text=str(current_num), bg='lightgreen', font=("Helvetica", 12, "bold"), width=3, height=1)
+        button.isFill = True
     else:
         messagebox.showerror("Błąd!", "Błąd! Tutaj nie możesz wstawić tej cyfry.")
 
@@ -128,6 +138,25 @@ def num_btn_callback(num):
     handles['num_btn'][prev_num-1]['relief'] = 'raised'
     handles['num_btn'][num-1]['relief'] = 'sunken'
 
+
+def change_note_mode_state():
+    btn_state = handles['note_mode_btn']['relief']
+    note_mode_state =  'raised' if btn_state == 'sunken' else 'sunken'
+    handles['note_mode_btn']['relief'] = note_mode_state
+    handles['note_mode'] = True if note_mode_state == 'sunken' else False
+
+def write_note(button, num):
+    if not hasattr(button, 'isFill'):
+        notes = button.notes if hasattr(button, 'notes') else []
+        if num in notes:
+            notes.remove(num)
+        else:
+            bisect.insort(notes, num)
+        button.notes = notes
+        btn_text = ''.join(map(str, notes)) if notes else ''
+        if len(notes) > 5:
+            btn_text = btn_text[0:5] + '\n' + btn_text[5:]
+        button.config(text=btn_text, font=('Helvetica', 7, 'normal'), width=5, height=2)
 
 if __name__ == "__main__":
     start_game()

@@ -12,6 +12,7 @@ Gra posiada następujące funkcjonalności:
 - Na początku gry gracz wybiera poziom trudności klikając na odpowiedni przycisk. Wybór gracza jest wysyłany wraz z żądaniem Get do API, z którego zostanie odebrana wygenerowana losowo plansza o wybranym poziomie trudności.
 - Pola, które są wstępnie wypełnione na początku gry są nieaktywne, a gracz nie może modyfikować ich wartości.
 - Użytkownik może mieć aktywny tylko jeden przycisk z cyfrą na raz. Jeśli naciśniesz inny przycisk, przycisk który był wciśnięty wcześniej staje się nieaktywny.
+- Tryb Notatek - służy do rejestrowania potencjalnych wartości, które mogą być umieszczone w pustych polach. Aby go aktywować, użytkownik musi nacisnąć przycisk 'N'. Wyświetlane liczby są przedstawione w porządku rosnącym i mogą być zarówno dodawane, jak i usuwane z puli.
 - Pola, które użytkownik wypełnił ostateczną wartością zmieniają kolor na zielony.
 - Po wypełnieniu wszystkich pól, użytkownik otrzymuje powiadomienie o wygranej i może wybrać poziom trudności ponownie lub zakończyć rozgrywkę.
 
