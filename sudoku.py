@@ -45,6 +45,7 @@ def choose_difficulty():
 def create_sudoku_board(difficulty):
     global handles
     global solution
+    global fails_limit
 
     sudoku = get_sudoku_from_api(difficulty)
     solution = get_solution_from_api(sudoku)
@@ -86,9 +87,18 @@ def create_sudoku_board(difficulty):
     positions = [(160, 30, 2, 273), (280, 30, 2, 273), (40, 120, 360, 2), (40, 210, 360, 2)]
     for position in positions:
         tk.Label(root, bg="black").place(x=position[0], y=position[1], width=position[2], height=position[3])
+    
+    tk.Label(root, text="Liczba\npomyłek:", font=("Helvetica", 9, "normal")).place(x=410, y=80)
+    fails_counter = tk.Label(root, text="0", font=("Helvetica", 9, "normal"))
+    fails_counter.place(x=430, y=112)
+
+    fails_limit = 3
+    tk.Label(root, text="Limit\npomyłek:", font=("Helvetica", 9, "normal")).place(x=410, y=160)
+    tk.Label(root, text=str(fails_limit), font=("Helvetica", 9, "normal")).place(x=430, y=192)
 
     handles = {'sudoku': sudoku, 'current_num': 0, 'moves': moves, 'sudoku_btn': sudoku_btn,
-               'num_btn': num_btn, 'note_mode_btn': note_mode_btn, 'note_mode': False}
+               'num_btn': num_btn, 'note_mode_btn': note_mode_btn, 'note_mode': False,
+               'fails_counter': fails_counter}
     root.mainloop()
 
 
@@ -109,6 +119,7 @@ def sudoku_btn_callback(row, col):
     sudoku = handles['sudoku']
     moves = handles['moves']
     note_mode = handles['note_mode']
+    fails = int(handles['fails_counter']['text'])
 
     if note_mode is True:
         write_note(button, current_num)
@@ -118,10 +129,19 @@ def sudoku_btn_callback(row, col):
         button.config(text=str(current_num), bg='lightgreen', font=("Helvetica", 12, "bold"), width=3, height=1)
         button.isFill = True
     else:
-        messagebox.showerror("Błąd!", "Błąd! Tutaj nie możesz wstawić tej cyfry.")
+        fails += 1
+        handles['fails_counter'].config(text=str(fails))
+        if fails <= fails_limit:
+            messagebox.showerror("Błąd!", "Błąd! Tutaj nie możesz wstawić tej cyfry.")
 
-    if moves == 0:
-        answer = messagebox.askquestion("Wygrana", "Gratulacje, rozwiązałeś Sudoku!\nCzy chcesz zagrać jeszcze raz?")
+    if moves == 0 or fails > fails_limit:
+        if moves == 0:
+            message = 'Gratulacje, rozwiązałeś Sudoku!\nCzy chcesz zagrać jeszcze raz?'
+            title = 'Wygrana'
+        else:
+            message = 'Niestety, przegrałeś.\nCzy chcesz zagrać jeszcze raz?'
+            title = 'Przegrana'
+        answer = messagebox.askquestion(title, message)
         if answer == "yes":
             root.destroy()
             start_game()
